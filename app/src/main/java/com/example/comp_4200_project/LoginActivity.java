@@ -2,6 +2,7 @@ package com.example.comp_4200_project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
+                //password = BCrypt.withDefaults().hashToString(12, password.toCharArray());
 
                 // Perform basic validation
                 if (username.isEmpty() || password.isEmpty()) {
@@ -44,15 +47,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 login(username, password);
-
-                // Perform login (for now, just show a success message)
-                // In the future, replace this with actual login logic using WordPress API
-                /*if (isCredentialsValid(username, password)) {
-                    // If login is successful, navigate to the next activity (e.g., MainActivity)
-                    navigateToMainActivity();
-                } else {
-                    Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-                }*/
             }
         });
     }
@@ -74,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                //Always goes here
                 failToastMessage();
             }
         });
