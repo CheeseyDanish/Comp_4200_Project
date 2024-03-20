@@ -7,11 +7,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.gson.JsonObject;
 
+import java.security.SecureRandom;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import androidx.appcompat.app.AppCompatActivity;
-import at.favre.lib.crypto.bcrypt.BCrypt;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextUsername, editTextPassword;
     private Button buttonLogin;
     private WordPressAPI api;
+    private TrustManager[] trustCerts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
-                //password = BCrypt.withDefaults().hashToString(12, password.toCharArray());
 
                 // Perform basic validation
                 if (username.isEmpty() || password.isEmpty()) {
@@ -53,25 +60,40 @@ public class LoginActivity extends AppCompatActivity {
 
     // Placeholder method to simulate login authentication #TODO connect API
     private void login(String username, String password) {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://wp.davenpos.myweb.cs.uwindsor.ca/wp/").addConverterFactory(GsonConverterFactory.create()).build();
-        api = retrofit.create(WordPressAPI.class);
-        Call<JsonObject> call = api.authenticateUser(username, password);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    navigateToMainActivity();
-                } else {
+        try {
+            trustCerts = new TrustManager[]{new TrustCertificates()};
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustCerts, new SecureRandom());
+            OkHttpClient client = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustCerts[0]).hostnameVerifier((hostname, session) -> true).build();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl("https://simon31.myweb.cs.uwindsor.ca").client(client).addConverterFactory(GsonConverterFactory.create()).build();
+            api = retrofit.create(WordPressAPI.class);
+            RequestBody usernameBody = RequestBody.create(MediaType.parse("text/plain"), username);
+            RequestBody passwordBody = RequestBody.create(MediaType.parse("text/plain"), password);
+            Call<JsonObject> call = api.authenticateUser(usernameBody, passwordBody);
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful()) {
+                        String token = response.body().get("jwt_token").getAsString();
+                        Log.d("Login log", token);
+                        navigateToMainActivity();
+                    } else {
+                        Log.d("Login log", "Unsuccessful");
+                        failToastMessage();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    //Always goes here
+                    Log.d("Login log", t.toString());
                     failToastMessage();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                //Always goes here
-                failToastMessage();
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            failToastMessage();
+        }
     }
 
     // Method to navigate to the main activity
