@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button buttonLogin;
     private WordPressAPI api;
     private TrustManager[] trustCerts;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = editTextUsername.getText().toString().trim();
+                username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
 
                 // Perform basic validation
@@ -75,10 +76,8 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
                         String token = response.body().get("jwt_token").getAsString();
-                        Log.d("Login log", token);
-                        navigateToMainActivity();
+                        navigateToMainActivity(token);
                     } else {
-                        Log.d("Login log", "Unsuccessful");
                         failToastMessage();
                     }
                 }
@@ -86,7 +85,6 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     //Always goes here
-                    Log.d("Login log", t.toString());
                     failToastMessage();
                 }
             });
@@ -97,8 +95,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // Method to navigate to the main activity
-    private void navigateToMainActivity() {
+    private void navigateToMainActivity(String jwtToken) {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("token", jwtToken);
+        intent.putExtra("username", username);
         startActivity(intent);
         finish(); // Finish the LoginActivity to prevent users from going back using the back button
     }
