@@ -11,5 +11,43 @@
         android:textAlignment="center"
         android:textSize="15dp"
         />
+    <EditText <!-- Title-->
+        android:id="@+id/editTextTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Title"/>
+
+    <EditText <!-- Content-->
+        android:id="@+id/editTextContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Content"
+        android:minLines="5" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton <!-- Post-->
+            android:id="@+id/radioButtonPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post"/>
+
+        <RadioButton <!-- Page-->
+            android:id="@+id/radioButtonPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Page"/>
+    </RadioGroup>
+
+    <Button <!-- Publish-->
+        android:id="@+id/buttonPublish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Publish"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>
