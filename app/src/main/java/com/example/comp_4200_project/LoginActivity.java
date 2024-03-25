@@ -84,7 +84,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
-                    //Always goes here
                     failToastMessage();
                 }
             });
