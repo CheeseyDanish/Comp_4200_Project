@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                         Retrofit retrofit = new Retrofit.Builder().baseUrl("https://simon31.myweb.cs.uwindsor.ca").client(client).addConverterFactory(GsonConverterFactory.create()).build();
                         api = retrofit.create(WordPressAPI.class);
                         createPost();
+                        etContent.setText("");
+                        etTitle.setText("");
                     } catch (Exception e) {
                         e.printStackTrace();
                         showToastMessage("There was a problem creating the post.");
@@ -103,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // #TODO Create Main activity
     }
 
     private void showToastMessage(String msg) {

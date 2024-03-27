@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    // Placeholder method to simulate login authentication #TODO connect API
+    // Placeholder method to simulate login authentication
     private void login(String username, String password) {
         try {
             trustCerts = new TrustManager[]{new TrustCertificates()};
